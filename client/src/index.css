@@ -8,13 +8,15 @@
   }
 
   body {
-    @apply font-sans antialiased text-white;
-    background: linear-gradient(90deg, #6B1FA6 0%, #C636D0 100%);
+    @apply font-sans antialiased;
+    background: linear-gradient(to bottom, #f5f5e6, #8bbc81, #2E7D32, #e67e22);
+    color: #1a3a1a;
     letter-spacing: 0.5px;
   }
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-medium tracking-wide;
+    color: #2E7D32;
   }
 }
 
@@ -23,22 +25,69 @@
     @apply max-w-7xl mx-auto p-4;
   }
   
+  .bg-cream {
+    background-color: #f5f5e6;
+  }
+  
+  .bg-light-green {
+    background-color: #8bbc81;
+  }
+  
+  .bg-dark-green {
+    background-color: #2E7D32;
+  }
+  
+  .bg-accent-orange {
+    background-color: #e67e22;
+  }
+  
+  .text-dark-green {
+    color: #2E7D32;
+  }
+  
+  .text-light-green {
+    color: #8bbc81;
+  }
+  
+  .text-cream {
+    color: #f5f5e6;
+  }
+  
+  .text-accent-orange {
+    color: #e67e22;
+  }
+  
+  .border-light-green {
+    border-color: #8bbc81;
+  }
+  
+  .border-dark-green {
+    border-color: #2E7D32;
+  }
+  
+  .border-accent-orange {
+    border-color: #e67e22;
+  }
+  
   .card-gradient {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid #8bbc81;
     transition: all 0.3s ease;
+    color: #1a3a1a;
   }
   
   .card-gradient:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.9);
     transform: translateY(-2px);
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 25px -5px rgba(46, 125, 50, 0.3);
+    border-color: #2E7D32;
   }
   
   .premium-gradient {
-    background: linear-gradient(135deg, #9e3fff 0%, #ff9e3f 100%);
+    background: linear-gradient(135deg, #2E7D32 0%, #e67e22 100%);
     transition: all 0.3s ease;
+    color: white;
   }
   
   .premium-gradient:hover {
@@ -59,7 +108,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(230, 126, 34, 0.1);
     transform: translateX(-100%);
     transition: transform 0.4s ease;
   }
@@ -78,17 +127,17 @@
   
   @keyframes pulse {
     0% {
-      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
+      box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4);
       transform: scale(1);
       opacity: 1;
     }
     50% {
-      box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 0 6px rgba(46, 125, 50, 0.2);
       transform: scale(1.03);
       opacity: 0.95;
     }
     100% {
-      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+      box-shadow: 0 0 0 0 rgba(46, 125, 50, 0);
       transform: scale(1);
       opacity: 1;
     }

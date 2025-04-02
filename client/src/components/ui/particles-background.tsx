@@ -22,39 +22,49 @@ const ParticlesBackground = ({ id = 'tsparticles' }: ParticlesBackgroundProps) =
             fpsLimit: 60,
             particles: {
               color: {
-                value: '#ffffff',
+                value: ['#f5f5e6', '#8bbc81', '#2E7D32', '#e67e22'],
               },
               links: {
-                color: '#ffffff',
+                color: '#2E7D32',
                 distance: 150,
                 enable: true,
-                opacity: 0.2,
+                opacity: 0.15,
                 width: 1,
               },
               move: {
                 direction: 'none',
                 enable: true,
                 outModes: {
-                  default: 'bounce',
+                  default: 'out',
                 },
-                random: false,
-                speed: 0.5,
+                random: true,
+                speed: 0.6,
                 straight: false,
               },
               number: {
                 density: {
                   enable: true,
                 },
-                value: 50,
+                value: 40,
               },
               opacity: {
-                value: 0.3,
+                value: 0.4,
+                animation: {
+                  enable: true,
+                  speed: 0.2,
+                  minimumValue: 0.1,
+                },
               },
               shape: {
-                type: 'circle',
+                type: ['circle', 'triangle'],
               },
               size: {
-                value: { min: 1, max: 3 },
+                value: { min: 1, max: 4 },
+                animation: {
+                  enable: true,
+                  speed: 1,
+                  minimumValue: 0.5,
+                },
               },
             },
             detectRetina: true,
@@ -69,13 +79,21 @@ const ParticlesBackground = ({ id = 'tsparticles' }: ParticlesBackgroundProps) =
                   enable: true,
                   mode: 'grab',
                 },
+                onClick: {
+                  enable: true,
+                  mode: 'push',
+                },
               },
               modes: {
                 grab: {
                   distance: 140,
                   links: {
-                    opacity: 0.5,
+                    opacity: 0.8,
+                    color: '#e67e22',
                   },
+                },
+                push: {
+                  quantity: 4,
                 },
               },
             },

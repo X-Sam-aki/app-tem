@@ -54,13 +54,13 @@ const AppLayout = ({ children, title, showCreateButton = true }: AppLayoutProps)
       {/* Main content */}
       <div className="flex flex-col flex-1 overflow-y-auto">
         {/* Page header */}
-        <header className="bg-white/10 backdrop-blur-sm border-b border-white/20 hidden md:block">
+        <header className="bg-white/80 backdrop-blur-sm border-b border-light-green hidden md:block">
           <div className="py-4 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-            <h1 className="text-xl font-semibold text-white">{title}</h1>
+            <h1 className="text-xl font-semibold text-dark-green">{title}</h1>
             {showCreateButton && (
               <div>
                 <button 
-                  className="px-4 py-2 rounded-md bg-gradient-to-r from-amber-400 to-amber-600 text-white font-medium btn-hover-effect pulse-on-hover shadow-lg"
+                  className="px-4 py-2 rounded-md bg-gradient-to-r from-dark-green to-accent-orange text-white font-medium btn-hover-effect pulse-on-hover shadow-lg"
                   onClick={() => navigate('/create-video')}
                 >
                   Create New Video
@@ -73,7 +73,7 @@ const AppLayout = ({ children, title, showCreateButton = true }: AppLayoutProps)
         {/* Mobile sidebar menu (shows when menu button is clicked) */}
         {isMobileMenuOpen && (
           <div className="md:hidden fixed inset-0 z-20 bg-black bg-opacity-50" onClick={toggleMobileMenu}>
-            <div className="h-full w-64 bg-gradient-to-br from-purple-900 to-fuchsia-800" onClick={e => e.stopPropagation()}>
+            <div className="h-full w-64 bg-gradient-to-br from-light-green to-dark-green" onClick={e => e.stopPropagation()}>
               <Sidebar isMobile={true} closeMobileMenu={() => setIsMobileMenuOpen(false)} />
             </div>
           </div>
