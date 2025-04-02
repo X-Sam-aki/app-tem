@@ -37,9 +37,11 @@ export const useAuth = () => {
       return data;
     },
     onSuccess: (data) => {
+      // Set user immediately without waiting for refetch
       setUser(data);
+      // No need to invalidate since we already have the user data
       toast.success('Login successful!');
-      navigate('/');
+      navigate('/dashboard');
     },
     onError: (error: Error) => {
       toast.error(`Login failed: ${error.message}`);
@@ -54,9 +56,11 @@ export const useAuth = () => {
       return data;
     },
     onSuccess: (data) => {
+      // Set user immediately without waiting for refetch
       setUser(data);
+      // No need to invalidate since we already have the user data
       toast.success('Registration successful!');
-      navigate('/');
+      navigate('/dashboard');
     },
     onError: (error: Error) => {
       toast.error(`Registration failed: ${error.message}`);

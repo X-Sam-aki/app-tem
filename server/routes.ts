@@ -98,7 +98,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   };
   
   // Auth routes
-  app.post('/api/auth/register', async (req, res) => {
+  app.post('/api/auth/register', async (req, res, next) => {
     try {
       const userData = registerSchema.parse(req.body);
       
@@ -125,9 +125,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         password: hashedPassword
       });
       
-      // Return user without password
-      const { password, ...userWithoutPassword } = newUser;
-      res.status(201).json(userWithoutPassword);
+      // Auto-login the user after registration
+      req.logIn(newUser, (err: any) => {
+        if (err) {
+          console.error('Registration login error:', err);
+          return next(err);
+        }
+        
+        // Ensure session is saved
+        req.session.save((err) => {
+          if (err) {
+            console.error('Session save error:', err);
+            return next(err);
+          }
+          
+          // Return user without password
+          const { password, ...userWithoutPassword } = newUser;
+          res.status(201).json(userWithoutPassword);
+        });
+      });
     } catch (err) {
       handleZodError(err, res);
     }
@@ -153,9 +169,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return next(err);
           }
           
-          // Return user data without password
-          const { password, ...userWithoutPassword } = user;
-          return res.json(userWithoutPassword);
+          // Wait for the session to be saved before responding
+          req.session.save((err) => {
+            if (err) {
+              console.error('Session save error:', err);
+              return next(err);
+            }
+            
+            // Return user data without password
+            const { password, ...userWithoutPassword } = user;
+            return res.json(userWithoutPassword);
+          });
         });
       })(req, res, next);
     } catch (err) {
