@@ -327,10 +327,10 @@ export async function extractTemuProduct(url: string): Promise<TemuProduct> {
   }
 }
 
-// For testing the extraction directly
-if (require.main === module) {
-  const testUrl = process.argv[2] || 'https://www.temu.com/subject/n9/googleshopping-landingpage-a-psurl.html?goods_id=601099511975028';
-  extractTemuProduct(testUrl)
-    .then(product => console.log(JSON.stringify(product, null, 2)))
-    .catch(error => console.error('Extraction error:', error));
-}
+// For testing the extraction directly - commented out for ES module compatibility
+// To test manually, use:
+// import { extractTemuProduct } from './temu-extractor.js';
+// const testUrl = 'https://www.temu.com/subject/n9/googleshopping-landingpage-a-psurl.html?goods_id=601099511975028';
+// extractTemuProduct(testUrl)
+//   .then(product => console.log(JSON.stringify(product, null, 2)))
+//   .catch(error => console.error('Extraction error:', error));

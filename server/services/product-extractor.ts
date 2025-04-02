@@ -1,5 +1,6 @@
 import { extractTemuProduct } from './temu-extractor';
 import { extractAmazonProduct } from './amazon-extractor';
+import { extractWalmartProduct } from './walmart-extractor';
 
 export interface Product {
   title: string;
@@ -45,11 +46,13 @@ export async function extractProduct(url: string): Promise<Product> {
       console.log('Using Amazon extractor for URL:', url);
       return await extractAmazonProduct(url);
     }
+    else if (hostname.includes('walmart.com') && ENABLE_MULTIPLATFORM) {
+      console.log('Using Walmart extractor for URL:', url);
+      return await extractWalmartProduct(url);
+    }
     else if (ENABLE_MULTIPLATFORM) {
       // Could add more extractors for other platforms here
-      throw new Error('Unsupported platform. Currently supporting Temu' + 
-        (ENABLE_MULTIPLATFORM ? ' and Amazon' : '') + 
-        ' product URLs.');
+      throw new Error('Unsupported platform. Currently supporting Temu, Amazon, and Walmart product URLs.');
     }
     else {
       // Non-premium users only get Temu support

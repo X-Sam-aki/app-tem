@@ -5,24 +5,24 @@ import {
   videoAnalytics, type VideoAnalytics, type InsertVideoAnalytics
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user;
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user;
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
@@ -33,7 +33,7 @@ export class DatabaseStorage implements IStorage {
   // Product operations
   async getProduct(id: number): Promise<Product | undefined> {
     const [product] = await db.select().from(products).where(eq(products.id, id));
-    return product;
+    return product || undefined;
   }
 
   async getProductsByUserId(userId: number): Promise<Product[]> {
@@ -45,24 +45,24 @@ export class DatabaseStorage implements IStorage {
     return product;
   }
 
-  async updateProduct(id: number, product: Partial<InsertProduct>): Promise<Product | undefined> {
-    const [updatedProduct] = await db
+  async updateProduct(id: number, productData: Partial<InsertProduct>): Promise<Product | undefined> {
+    const [product] = await db
       .update(products)
-      .set(product)
+      .set(productData)
       .where(eq(products.id, id))
       .returning();
-    return updatedProduct;
+    return product || undefined;
   }
 
   async deleteProduct(id: number): Promise<boolean> {
     const result = await db.delete(products).where(eq(products.id, id));
-    return result.count > 0;
+    return !!result;
   }
 
   // Video operations
   async getVideo(id: number): Promise<Video | undefined> {
     const [video] = await db.select().from(videos).where(eq(videos.id, id));
-    return video;
+    return video || undefined;
   }
 
   async getVideosByUserId(userId: number): Promise<Video[]> {
@@ -74,27 +74,27 @@ export class DatabaseStorage implements IStorage {
     return video;
   }
 
-  async updateVideo(id: number, video: Partial<InsertVideo>): Promise<Video | undefined> {
-    const [updatedVideo] = await db
+  async updateVideo(id: number, videoData: Partial<InsertVideo>): Promise<Video | undefined> {
+    const [video] = await db
       .update(videos)
-      .set(video)
+      .set(videoData)
       .where(eq(videos.id, id))
       .returning();
-    return updatedVideo;
+    return video || undefined;
   }
 
   async deleteVideo(id: number): Promise<boolean> {
     const result = await db.delete(videos).where(eq(videos.id, id));
-    return result.count > 0;
+    return !!result;
   }
 
-  // Video Analytics operations
+  // VideoAnalytics operations
   async getVideoAnalytics(videoId: number): Promise<VideoAnalytics | undefined> {
     const [analytics] = await db
       .select()
       .from(videoAnalytics)
       .where(eq(videoAnalytics.videoId, videoId));
-    return analytics;
+    return analytics || undefined;
   }
 
   async createVideoAnalytics(insertAnalytics: InsertVideoAnalytics): Promise<VideoAnalytics> {
@@ -105,12 +105,12 @@ export class DatabaseStorage implements IStorage {
     return analytics;
   }
 
-  async updateVideoAnalytics(id: number, analytics: Partial<InsertVideoAnalytics>): Promise<VideoAnalytics | undefined> {
-    const [updatedAnalytics] = await db
+  async updateVideoAnalytics(id: number, analyticsData: Partial<InsertVideoAnalytics>): Promise<VideoAnalytics | undefined> {
+    const [analytics] = await db
       .update(videoAnalytics)
-      .set({ ...analytics, updatedAt: new Date() })
+      .set(analyticsData)
       .where(eq(videoAnalytics.id, id))
       .returning();
-    return updatedAnalytics;
+    return analytics || undefined;
   }
 }

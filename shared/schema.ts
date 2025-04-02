@@ -147,9 +147,10 @@ export const productUrlSchema = z.object({
   url: z.string().url().refine(url => {
     // Allow URLs from supported platforms
     return url.includes("temu.com") || 
-           url.includes("amazon.com");
+           url.includes("amazon.com") ||
+           url.includes("walmart.com");
   }, {
-    message: "URL must be from a supported platform (Temu, Amazon)",
+    message: "URL must be from a supported platform (Temu, Amazon, Walmart)",
   }),
 });
 

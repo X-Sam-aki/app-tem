@@ -241,38 +241,12 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Create a storage variable that can be swapped out
-let storageImplementation: IStorage = new MemStorage();
+// Import our database storage implementation
+import { DatabaseStorage } from "./database-storage";
 
-// Function to set a different storage implementation
-export function setStorage(newStorage: IStorage) {
-  storageImplementation = newStorage;
-}
+// Create and export the storage instance
+// Use DatabaseStorage for production with real PostgreSQL
+export const storage: IStorage = new DatabaseStorage();
 
-// Export the current storage implementation
-export const storage: IStorage = {
-  // User operations
-  getUser: (id) => storageImplementation.getUser(id),
-  getUserByEmail: (email) => storageImplementation.getUserByEmail(email),
-  getUserByUsername: (username) => storageImplementation.getUserByUsername(username),
-  createUser: (user) => storageImplementation.createUser(user),
-  
-  // Product operations
-  getProduct: (id) => storageImplementation.getProduct(id),
-  getProductsByUserId: (userId) => storageImplementation.getProductsByUserId(userId),
-  createProduct: (product) => storageImplementation.createProduct(product),
-  updateProduct: (id, product) => storageImplementation.updateProduct(id, product),
-  deleteProduct: (id) => storageImplementation.deleteProduct(id),
-  
-  // Video operations
-  getVideo: (id) => storageImplementation.getVideo(id),
-  getVideosByUserId: (userId) => storageImplementation.getVideosByUserId(userId),
-  createVideo: (video) => storageImplementation.createVideo(video),
-  updateVideo: (id, video) => storageImplementation.updateVideo(id, video),
-  deleteVideo: (id) => storageImplementation.deleteVideo(id),
-  
-  // Video Analytics operations
-  getVideoAnalytics: (videoId) => storageImplementation.getVideoAnalytics(videoId),
-  createVideoAnalytics: (analytics) => storageImplementation.createVideoAnalytics(analytics),
-  updateVideoAnalytics: (id, analytics) => storageImplementation.updateVideoAnalytics(id, analytics)
-};
+// For testing purposes, we can still use MemStorage
+// export const storage: IStorage = new MemStorage();
