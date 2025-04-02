@@ -1,6 +1,26 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { runMigrations } from "./db";
+import { DbStorage } from "./db-storage";
+import { setStorage } from "./storage";
+
+// Initialize database
+async function initializeDatabase() {
+  try {
+    // Run database migrations
+    await runMigrations();
+    
+    // Set up database storage
+    const dbStorage = new DbStorage();
+    setStorage(dbStorage);
+    
+    log("Database initialized successfully", "db");
+  } catch (error) {
+    log(`Failed to initialize database: ${error}`, "db");
+    process.exit(1);
+  }
+}
 
 const app = express();
 app.use(express.json());
@@ -37,6 +57,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Initialize database before registering routes
+  await initializeDatabase();
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

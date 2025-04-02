@@ -173,4 +173,38 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// Create a storage variable that can be swapped out
+let storageImplementation: IStorage = new MemStorage();
+
+// Function to set a different storage implementation
+export function setStorage(newStorage: IStorage) {
+  storageImplementation = newStorage;
+}
+
+// Export the current storage implementation
+export const storage: IStorage = {
+  // User operations
+  getUser: (id) => storageImplementation.getUser(id),
+  getUserByEmail: (email) => storageImplementation.getUserByEmail(email),
+  getUserByUsername: (username) => storageImplementation.getUserByUsername(username),
+  createUser: (user) => storageImplementation.createUser(user),
+  
+  // Product operations
+  getProduct: (id) => storageImplementation.getProduct(id),
+  getProductsByUserId: (userId) => storageImplementation.getProductsByUserId(userId),
+  createProduct: (product) => storageImplementation.createProduct(product),
+  updateProduct: (id, product) => storageImplementation.updateProduct(id, product),
+  deleteProduct: (id) => storageImplementation.deleteProduct(id),
+  
+  // Video operations
+  getVideo: (id) => storageImplementation.getVideo(id),
+  getVideosByUserId: (userId) => storageImplementation.getVideosByUserId(userId),
+  createVideo: (video) => storageImplementation.createVideo(video),
+  updateVideo: (id, video) => storageImplementation.updateVideo(id, video),
+  deleteVideo: (id) => storageImplementation.deleteVideo(id),
+  
+  // Video Analytics operations
+  getVideoAnalytics: (videoId) => storageImplementation.getVideoAnalytics(videoId),
+  createVideoAnalytics: (analytics) => storageImplementation.createVideoAnalytics(analytics),
+  updateVideoAnalytics: (id, analytics) => storageImplementation.updateVideoAnalytics(id, analytics)
+};
