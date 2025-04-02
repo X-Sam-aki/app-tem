@@ -25,7 +25,66 @@ export async function extractTemuProduct(url: string): Promise<TemuProduct> {
       throw new Error('Invalid Temu URL');
     }
 
-    // Fetch the product page
+    // Attempt to extract product ID from URL
+    let productId = '';
+    const goodsIdMatch = url.match(/goods_id=([0-9]+)/);
+    if (goodsIdMatch && goodsIdMatch[1]) {
+      productId = goodsIdMatch[1];
+    } else {
+      // Alternative extraction for different URL formats
+      const urlPathParts = url.split('/');
+      const lastPart = urlPathParts[urlPathParts.length - 1];
+      if (/^\d+$/.test(lastPart)) {
+        productId = lastPart;
+      }
+    }
+    
+    // If we have a product ID, try to use Temu's API directly
+    if (productId) {
+      try {
+        // Try the product API first - this might be blocked but worth trying
+        const apiUrl = `https://www.temu.com/api/atlas/product/detail?goods_id=${productId}`;
+        const response = await axios.get(apiUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'application/json',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Referer': 'https://www.temu.com/',
+          },
+          timeout: 5000,
+        });
+        
+        // If we got API data, use it instead of scraping HTML
+        if (response.data && response.data.data) {
+          const productData = response.data.data;
+          return {
+            title: productData.goods_name || 'Temu Product',
+            description: productData.goods_desc || 'No description available',
+            price: productData.price?.price_display || '$0.00',
+            images: (productData.gallery || []).map((img: any) => img.url),
+            platformId: productId,
+            platformName: 'temu',
+            url,
+            metadata: {
+              rating: productData.review?.average || 4.5,
+              reviewCount: productData.review?.count || 0,
+              productDetails: productData.specifications?.reduce((acc: Record<string, string>, spec: any) => {
+                if (spec.name && spec.value) {
+                  acc[spec.name] = spec.value;
+                }
+                return acc;
+              }, {}),
+              features: productData.selling_points || []
+            }
+          };
+        }
+      } catch (error) {
+        console.log('API fetch attempt failed, falling back to HTML scraping', error);
+        // Continue to HTML scraping as fallback
+      }
+    }
+    
+    // Fallback to HTML page scraping
     const response = await axios.get(url, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
@@ -39,21 +98,67 @@ export async function extractTemuProduct(url: string): Promise<TemuProduct> {
     // Load the HTML content
     const $ = cheerio.load(response.data);
     
-    // Extract information
-    const title = $('h1.title').text().trim() || $('._3-q1y').text().trim();
-    let description = $('._3CRkq').text().trim();
-    
-    if (!description) {
-      // Try other potential selectors for description
-      description = $('.product-detail-description').text().trim();
+    // Extract title with multiple selectors
+    let title = '';
+    const titleSelectors = ['h1.title', '._3-q1y', '.product-title', '.item-title', '.goods-name', '.product-name h1'];
+    for (const selector of titleSelectors) {
+      const text = $(selector).text().trim();
+      if (text) {
+        title = text;
+        break;
+      }
     }
     
-    // Extract price
-    let price = $('._2yjN1').text().trim() || $('.price-current').text().trim();
+    // Try to extract from structured data if selectors didn't work
+    if (!title) {
+      try {
+        const structuredData = $('script[type="application/ld+json"]').html();
+        if (structuredData) {
+          const jsonData = JSON.parse(structuredData);
+          if (jsonData.name) {
+            title = jsonData.name;
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing structured data:', e);
+      }
+    }
     
+    // Extract description with multiple selectors
+    let description = '';
+    const descriptionSelectors = ['._3CRkq', '.product-detail-description', '.product-description', '.goods-description'];
+    for (const selector of descriptionSelectors) {
+      const text = $(selector).text().trim();
+      if (text) {
+        description = text;
+        break;
+      }
+    }
+    
+    // Extract price with multiple selectors
+    let price = '';
+    const priceSelectors = ['._2yjN1', '.price-current', '._25Uo9', '.price', '.product-price', '.goods-price'];
+    for (const selector of priceSelectors) {
+      const text = $(selector).text().trim();
+      if (text) {
+        price = text;
+        break;
+      }
+    }
+    
+    // Try to extract price from structured data if selectors didn't work
     if (!price) {
-      // Try other potential selectors for price
-      price = $('._25Uo9').text().trim() || $('.price').text().trim();
+      try {
+        const structuredData = $('script[type="application/ld+json"]').html();
+        if (structuredData) {
+          const jsonData = JSON.parse(structuredData);
+          if (jsonData.offers && jsonData.offers.price) {
+            price = '$' + jsonData.offers.price;
+          }
+        }
+      } catch (e) {
+        console.error('Error parsing structured data for price:', e);
+      }
     }
     
     // Extract images
@@ -89,9 +194,8 @@ export async function extractTemuProduct(url: string): Promise<TemuProduct> {
       }
     }
 
-    // Extract product ID
-    const urlParts = url.split('/');
-    const platformId = urlParts[urlParts.length - 1].split('?')[0];
+    // Extract platformId from URL if not already set
+    const extractedPlatformId = productId || url.split('/').pop()?.split('?')[0] || 'unknown';
 
     // Try to extract product details
     const productDetails: Record<string, string> = {};
@@ -131,9 +235,9 @@ export async function extractTemuProduct(url: string): Promise<TemuProduct> {
       }
     }
 
-    // If we couldn't extract enough data, throw an error
+    // If we couldn't extract enough data, return fallback
     if (!title || images.length === 0) {
-      // Fall back to mock data for development if we couldn't extract real data
+      // Fall back to sample data for development if we couldn't extract real data
       return {
         title: "Sample Temu Product (Extraction Failed)",
         description: "This is a sample product because we couldn't extract the real data from Temu. The extraction might be failing due to Temu's anti-scraping measures.",
@@ -143,7 +247,7 @@ export async function extractTemuProduct(url: string): Promise<TemuProduct> {
           "https://img.temu.com/o/upload_a4fb3bc70f9e41709aa5d22f2e87a2fc.jpg",
           "https://img.temu.com/o/upload_2d1b0dcba6be41e6bc0c8d2b430b2ad4.jpg"
         ],
-        platformId: platformId || "temu-sample",
+        platformId: extractedPlatformId,
         platformName: "temu",
         url,
         metadata: { 
@@ -173,7 +277,7 @@ export async function extractTemuProduct(url: string): Promise<TemuProduct> {
       description,
       price: price || 'Price not available',
       images,
-      platformId,
+      platformId: extractedPlatformId,
       platformName: 'temu',
       url,
       metadata: {

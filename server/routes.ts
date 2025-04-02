@@ -180,18 +180,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { url } = temuUrlSchema.parse(req.body);
       
+      // Validate URL format
+      if (!url.includes('temu.com')) {
+        return res.status(400).json({ 
+          message: 'Invalid Temu URL format',
+          error: 'The URL provided does not appear to be a valid Temu product URL'
+        });
+      }
+      
       // Import the Temu product extractor
       const { extractTemuProduct } = await import('./services/temu-extractor');
       
       try {
+        console.log('Attempting to extract product data from:', url);
+        
         // Extract the actual product data from Temu
         const productData = await extractTemuProduct(url);
+        
+        // Check if we got a fallback response (extraction failed)
+        if (productData.metadata.extractionError) {
+          console.log('Product extraction partially failed:', productData.metadata.extractionError);
+          
+          // We still return 200 since we have fallback data, but include warning
+          return res.status(200).json({
+            ...productData,
+            extractionWarning: 'Some product data could not be extracted directly from Temu. The data shown may be incomplete.'
+          });
+        }
+        
+        // Successful extraction
+        console.log('Product extraction successful:', productData.title);
         res.json(productData);
       } catch (error) {
         console.error('Error extracting product:', error);
         res.status(500).json({ 
           message: 'Failed to extract product data',
-          error: error instanceof Error ? error.message : String(error)
+          error: error instanceof Error ? error.message : String(error),
+          suggestion: 'Please try a different Temu product URL or check if the URL is correct.'
         });
       }
     } catch (err) {
