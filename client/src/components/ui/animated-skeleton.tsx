@@ -1,111 +1,79 @@
+import React from 'react';
 import { cn } from '@/lib/utils';
 
 interface AnimatedSkeletonProps {
   className?: string;
-  variant?: 'line' | 'circle' | 'rectangle' | 'card' | 'profile' | 'video';
+  shape?: 'circle' | 'rectangle' | 'card' | 'text' | 'button';
   count?: number;
-  width?: string;
-  height?: string;
+  isLoading?: boolean;
+  children?: React.ReactNode;
+  animated?: boolean;
 }
 
-const AnimatedSkeleton = ({
+const AnimatedSkeleton: React.FC<AnimatedSkeletonProps> = ({
   className,
-  variant = 'line',
+  shape = 'rectangle',
   count = 1,
-  width,
-  height,
-}: AnimatedSkeletonProps) => {
+  isLoading = true,
+  children,
+  animated = true,
+}) => {
   const renderSkeleton = () => {
-    switch (variant) {
-      case 'line':
-        return (
-          <div
-            className={cn(
-              'h-4 bg-white/10 rounded-md animate-pulse',
-              width ? width : 'w-full',
-              className
-            )}
-          />
-        );
-      case 'circle':
-        return (
-          <div
-            className={cn(
-              'rounded-full bg-white/10 animate-pulse',
-              width ? width : 'w-12',
-              height ? height : 'h-12',
-              className
-            )}
-          />
-        );
-      case 'rectangle':
-        return (
-          <div
-            className={cn(
-              'rounded-md bg-white/10 animate-pulse',
-              width ? width : 'w-full',
-              height ? height : 'h-24',
-              className
-            )}
-          />
-        );
-      case 'card':
-        return (
-          <div className={cn('card-gradient rounded-xl p-4 animate-pulse', className)}>
-            <div className="space-y-3">
-              <div className="h-4 bg-white/10 rounded-md w-3/4" />
-              <div className="h-3 bg-white/10 rounded-md w-full" />
-              <div className="h-3 bg-white/10 rounded-md w-5/6" />
-              <div className="pt-2">
-                <div className="h-6 bg-white/10 rounded-md w-1/3" />
-              </div>
-            </div>
-          </div>
-        );
-      case 'profile':
-        return (
-          <div className={cn('flex items-center space-x-4', className)}>
-            <div className="rounded-full bg-white/10 w-12 h-12 animate-pulse" />
-            <div className="space-y-2">
-              <div className="h-4 bg-white/10 rounded-md w-32 animate-pulse" />
-              <div className="h-3 bg-white/10 rounded-md w-24 animate-pulse" />
-            </div>
-          </div>
-        );
-      case 'video':
-        return (
-          <div className={cn('space-y-2', className)}>
-            <div 
-              className={cn(
-                'relative rounded-lg bg-white/10 animate-pulse', 
-                width ? width : 'w-full',
-                height ? height : 'h-40'
-              )}
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-white/20" />
-              </div>
-            </div>
-            <div className="h-4 bg-white/10 rounded-md w-3/4 animate-pulse" />
-            <div className="h-3 bg-white/10 rounded-md w-1/2 animate-pulse" />
-          </div>
-        );
-      default:
-        return null;
+    const skeletons = [];
+    
+    for (let i = 0; i < count; i++) {
+      let skeletonClass = '';
+      
+      switch (shape) {
+        case 'circle':
+          skeletonClass = 'h-12 w-12 rounded-full';
+          break;
+        case 'card':
+          skeletonClass = 'h-32 rounded-lg w-full';
+          break;
+        case 'text':
+          skeletonClass = 'h-4 rounded w-full';
+          break;
+        case 'button':
+          skeletonClass = 'h-10 rounded-md w-24';
+          break;
+        default:
+          skeletonClass = 'h-6 rounded w-full';
+      }
+      
+      skeletons.push(
+        <div
+          key={i}
+          className={cn(
+            "bg-gradient-to-r from-light-green/20 via-cream/30 to-light-green/20 bg-[length:400%_100%]",
+            animated && "animate-skeleton",
+            skeletonClass,
+            className,
+            { "mb-2": i < count - 1 && count > 1 }
+          )}
+        />
+      );
     }
+    
+    return skeletons;
   };
-
-  if (count === 1) {
-    return renderSkeleton();
+  
+  if (!isLoading) {
+    return <>{children}</>;
   }
-
-  return (
-    <div className="space-y-3">
-      {Array.from({ length: count }).map((_, i) => (
-        <div key={i}>{renderSkeleton()}</div>
-      ))}
-    </div>
-  );
+  
+  return <>{renderSkeleton()}</>;
 };
 
 export default AnimatedSkeleton;
+
+// Add to your tailwind.config.ts:
+// animation: {
+//   skeleton: 'shimmer 2s infinite',
+// },
+// keyframes: {
+//   shimmer: {
+//     '0%': { backgroundPosition: '200% 0' },
+//     '100%': { backgroundPosition: '0% 0' },
+//   },
+// },

@@ -1,50 +1,64 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { Button, ButtonProps } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
-interface PremiumButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
-  variant?: 'default' | 'subtle' | 'outline';
-  showIcon?: boolean;
-  size?: 'default' | 'sm' | 'lg' | 'icon';
+interface PremiumButtonProps extends ButtonProps {
+  premiumFeature?: string;
+  showSparkles?: boolean;
+  sparkleAnimation?: boolean;
+  className?: string;
 }
 
-const PremiumButton = React.forwardRef<HTMLButtonElement, PremiumButtonProps>(
-  ({ className, children, variant = 'default', showIcon = true, size = 'default', ...props }, ref) => {
-    const baseClasses = "font-medium transition-all";
-    
-    const variantClasses = {
-      default: "bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-white",
-      subtle: "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20",
-      outline: "bg-transparent border border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
-    };
-    
-    const sizeClasses = {
-      default: "h-10 py-2 px-4",
-      sm: "h-9 px-3 text-sm",
-      lg: "h-11 px-8 text-lg",
-      icon: "h-10 w-10"
-    };
-    
-    return (
-      <Button
-        className={cn(
-          baseClasses,
-          variantClasses[variant],
-          sizeClasses[size],
-          className
+const PremiumButton: React.FC<PremiumButtonProps> = ({
+  children,
+  premiumFeature,
+  showSparkles = true,
+  sparkleAnimation = true,
+  className,
+  ...props
+}) => {
+  return (
+    <Button
+      className={cn(
+        "relative group overflow-hidden",
+        "bg-gradient-to-r from-dark-green to-accent-orange border-none text-white",
+        "hover:from-accent-orange hover:to-dark-green",
+        "transition-all duration-500",
+        className
+      )}
+      {...props}
+    >
+      {/* Inner Content */}
+      <div className="flex items-center gap-2 z-10 relative">
+        {showSparkles && (
+          <Sparkles 
+            className={cn(
+              "h-4 w-4", 
+              sparkleAnimation && "text-yellow-300 animate-pulse"
+            )} 
+          />
         )}
-        ref={ref}
-        {...props}
-      >
-        {showIcon && variant === 'default' && <Sparkles className="mr-2 h-4 w-4" />}
         {children}
-      </Button>
-    );
-  }
-);
+      </div>
+      
+      {/* Premium Glow Effect */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute inset-0 bg-gradient-to-r from-yellow-300/20 via-accent-orange/20 to-yellow-300/20 bg-[length:200%_100%] animate-[shimmer_3s_ease-in-out_infinite]"></div>
+      </div>
+      
+      {/* Premium Feature Tooltip */}
+      {premiumFeature && (
+        <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-max px-3 py-1.5 bg-dark-green text-white text-xs rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 pointer-events-none">
+          <div className="flex items-center gap-1">
+            <Sparkles className="h-3 w-3" />
+            <span>{premiumFeature}</span>
+          </div>
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-dark-green rotate-45"></div>
+        </div>
+      )}
+    </Button>
+  );
+};
 
-PremiumButton.displayName = 'PremiumButton';
-
-export { PremiumButton };
+export default PremiumButton;
