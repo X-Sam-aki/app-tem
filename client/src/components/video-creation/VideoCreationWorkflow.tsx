@@ -7,8 +7,9 @@ import { apiRequest } from '@/lib/queryClient';
 import ProductExtraction from './ProductExtraction';
 import VideoCustomization from './VideoCustomization';
 import VideoPublishing from './VideoPublishing';
+import { PremiumFeatures } from './PremiumFeatures';
 import { toast } from 'sonner';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 
 const VideoCreationWorkflow = () => {
   const { currentStep, nextStep, prevStep } = useProgress();
@@ -88,29 +89,40 @@ const VideoCreationWorkflow = () => {
   };
 
   return (
-    <Card>
-      <CardContent className="p-5">
-        {renderStepContent()}
-        
-        <div className="flex justify-between mt-6 border-t border-slate-200 pt-4">
-          <Button
-            variant="outline"
-            onClick={prevStep}
-            disabled={currentStep === 0}
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>
+    <div className="space-y-8">
+      <Card>
+        <CardContent className="p-5">
+          {renderStepContent()}
           
-          {currentStep < 2 ? (
-            <Button onClick={handleNext}>
-              Next
-              <ArrowRight className="ml-2 h-4 w-4" />
+          <div className="flex justify-between mt-6 border-t border-slate-200 pt-4">
+            <Button
+              variant="outline"
+              onClick={prevStep}
+              disabled={currentStep === 0}
+            >
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back
             </Button>
-          ) : null}
+            
+            {currentStep < 2 ? (
+              <Button onClick={handleNext}>
+                Next
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            ) : null}
+          </div>
+        </CardContent>
+      </Card>
+      
+      {/* Premium Features Section */}
+      <div className="mt-8">
+        <div className="flex items-center mb-4">
+          <Sparkles className="mr-2 h-5 w-5 text-amber-500" />
+          <h2 className="text-xl font-semibold">Premium Features</h2>
         </div>
-      </CardContent>
-    </Card>
+        <PremiumFeatures />
+      </div>
+    </div>
   );
 };
 
