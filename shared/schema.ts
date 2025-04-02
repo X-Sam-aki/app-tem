@@ -1,4 +1,5 @@
 import { pgTable, text, serial, integer, boolean, jsonb, timestamp } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -62,6 +63,47 @@ export const videoAnalytics = pgTable("video_analytics", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+  userSettings: many(userSettings),
+  products: many(products),
+  videos: many(videos),
+}));
+
+export const userSettingsRelations = relations(userSettings, ({ one }) => ({
+  user: one(users, {
+    fields: [userSettings.userId],
+    references: [users.id],
+  }),
+}));
+
+export const productsRelations = relations(products, ({ one, many }) => ({
+  user: one(users, {
+    fields: [products.userId],
+    references: [users.id],
+  }),
+  videos: many(videos),
+}));
+
+export const videosRelations = relations(videos, ({ one, many }) => ({
+  user: one(users, {
+    fields: [videos.userId],
+    references: [users.id],
+  }),
+  product: one(products, {
+    fields: [videos.productId],
+    references: [products.id],
+  }),
+  analytics: many(videoAnalytics),
+}));
+
+export const videoAnalyticsRelations = relations(videoAnalytics, ({ one }) => ({
+  video: one(videos, {
+    fields: [videoAnalytics.videoId],
+    references: [videos.id],
+  }),
+}));
+
 // Insert Schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -101,6 +143,7 @@ export const insertVideoSchema = createInsertSchema(videos).pick({
   youtubeVideoId: true,
   status: true,
   metadata: true,
+  publishedAt: true,
 });
 
 export const insertVideoAnalyticsSchema = createInsertSchema(videoAnalytics).pick({

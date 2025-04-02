@@ -21,7 +21,9 @@ export interface IStorage {
   
   // Video operations
   getVideo(id: number): Promise<Video | undefined>;
+  getVideoWithDetails(id: number): Promise<(Video & { product?: Product, analytics?: VideoAnalytics }) | undefined>;
   getVideosByUserId(userId: number): Promise<Video[]>;
+  getVideosWithDetailsByUserId(userId: number): Promise<(Video & { product?: Product, analytics?: VideoAnalytics })[]>;
   createVideo(video: InsertVideo): Promise<Video>;
   updateVideo(id: number, video: Partial<InsertVideo>): Promise<Video | undefined>;
   deleteVideo(id: number): Promise<boolean>;
@@ -143,11 +145,46 @@ export class MemStorage implements IStorage {
   async getVideo(id: number): Promise<Video | undefined> {
     return this.videos.get(id);
   }
+  
+  async getVideoWithDetails(id: number): Promise<(Video & { product?: Product, analytics?: VideoAnalytics }) | undefined> {
+    const video = this.videos.get(id);
+    if (!video) return undefined;
+    
+    const product = video.productId ? this.products.get(video.productId) : undefined;
+    const analytics = Array.from(this.videoAnalytics.values()).find(
+      (analytics) => analytics.videoId === id,
+    );
+    
+    return {
+      ...video,
+      product,
+      analytics
+    };
+  }
 
   async getVideosByUserId(userId: number): Promise<Video[]> {
     return Array.from(this.videos.values()).filter(
       (video) => video.userId === userId,
     );
+  }
+  
+  async getVideosWithDetailsByUserId(userId: number): Promise<(Video & { product?: Product, analytics?: VideoAnalytics })[]> {
+    const userVideos = Array.from(this.videos.values()).filter(
+      (video) => video.userId === userId,
+    );
+    
+    return userVideos.map(video => {
+      const product = video.productId ? this.products.get(video.productId) : undefined;
+      const analytics = Array.from(this.videoAnalytics.values()).find(
+        (analytics) => analytics.videoId === video.id,
+      );
+      
+      return {
+        ...video,
+        product,
+        analytics
+      };
+    });
   }
 
   async createVideo(insertVideo: InsertVideo): Promise<Video> {

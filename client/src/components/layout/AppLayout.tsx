@@ -4,6 +4,7 @@ import MobileHeader from './MobileHeader';
 import { useAuth } from '@/hooks/use-auth';
 import { useLocation } from 'wouter';
 import { Loader2 } from 'lucide-react';
+import ParticlesBackground from '@/components/ui/particles-background';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -37,6 +38,9 @@ const AppLayout = ({ children, title, showCreateButton = true }: AppLayoutProps)
 
   return (
     <div className="flex h-screen overflow-hidden">
+      {/* Background particles */}
+      <ParticlesBackground id="background-particles" />
+      
       {/* Sidebar for desktop */}
       <Sidebar />
       
@@ -56,7 +60,7 @@ const AppLayout = ({ children, title, showCreateButton = true }: AppLayoutProps)
             {showCreateButton && (
               <div>
                 <button 
-                  className="px-4 py-2 rounded-md bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-white font-medium"
+                  className="px-4 py-2 rounded-md bg-gradient-to-r from-amber-400 to-amber-600 text-white font-medium btn-hover-effect pulse-on-hover shadow-lg"
                   onClick={() => navigate('/create-video')}
                 >
                   Create New Video
