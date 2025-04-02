@@ -9,7 +9,7 @@
 
   body {
     @apply font-sans antialiased;
-    background: linear-gradient(to bottom, #f5f5e6, #8bbc81, #2E7D32, #e67e22);
+    background: linear-gradient(330deg, #ff1252, #ff2d48, #ff3e3e, #ff4d35, #ff5a2d, #ff6626, #fe7222, #fb7c22, #f88727, #f5902f, #f29939, #eea244);
     color: #1a3a1a;
     letter-spacing: 0.5px;
   }
