@@ -4,13 +4,13 @@
 
 // Mock Supabase auth functions using our local API
 export const supabaseAuth = {
-  signUp: async ({ email, password, username, name }: { email: string; password: string; username: string; name?: string }) => {
+  signUp: async ({ email, password, username, name, confirmPassword }: { email: string; password: string; username: string; name?: string; confirmPassword: string }) => {
     const response = await fetch('/api/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password, username, name }),
+      body: JSON.stringify({ email, password, username, name, confirmPassword }),
       credentials: 'include',
     });
 

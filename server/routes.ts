@@ -73,12 +73,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Error handling middleware for Zod validation errors
   const handleZodError = (err: unknown, res: Response) => {
     if (err instanceof ZodError) {
-      const errors = err.errors.map(e => ({
-        path: e.path.join('.'),
-        message: e.message
-      }));
-      return res.status(400).json({ errors });
+      // Format error messages in a more user-friendly way
+      const firstError = err.errors[0];
+      const errorMessage = firstError.message;
+      // Use a more descriptive message for the frontend
+      return res.status(400).json({ 
+        message: `Registration failed: ${errorMessage}`,
+        errors: err.errors.map(e => ({
+          path: e.path.join('.'),
+          message: e.message
+        }))
+      });
     }
+    console.error('Server error:', err);
     return res.status(500).json({ message: 'An unexpected error occurred' });
   };
   
@@ -109,9 +116,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Hash password before storing
       const hashedPassword = hashPassword(userData.password);
       
+      // Remove confirmPassword before creating user
+      const { confirmPassword, ...userDataWithoutConfirm } = userData;
+      
       // Create user
       const newUser = await storage.createUser({
-        ...userData,
+        ...userDataWithoutConfirm,
         password: hashedPassword
       });
       
@@ -128,14 +138,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate request data
       loginSchema.parse(req.body);
       
-      passport.authenticate('local', (err, user, info) => {
-        if (err) return next(err);
+      passport.authenticate('local', (err: any, user: any, info: { message?: string }) => {
+        if (err) {
+          console.error('Login authentication error:', err);
+          return next(err);
+        }
         if (!user) {
-          return res.status(401).json({ message: info.message || 'Authentication failed' });
+          return res.status(401).json({ message: info.message || 'Login failed: Invalid credentials' });
         }
         
-        req.logIn(user, (err) => {
-          if (err) return next(err);
+        req.logIn(user, (err: any) => {
+          if (err) {
+            console.error('Login session error:', err);
+            return next(err);
+          }
           
           // Return user data without password
           const { password, ...userWithoutPassword } = user;
