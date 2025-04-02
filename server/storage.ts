@@ -73,7 +73,18 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const createdAt = new Date();
-    const user: User = { ...insertUser, id, createdAt };
+    
+    // Remove any optional fields, then add them explicitly with correct nulls
+    const { name, avatar, ...requiredFields } = insertUser;
+    
+    const user: User = { 
+      ...requiredFields, 
+      id, 
+      createdAt, 
+      name: name || null,
+      avatar: avatar || null
+    };
+    
     this.users.set(id, user);
     return user;
   }
@@ -92,7 +103,25 @@ export class MemStorage implements IStorage {
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
     const id = this.currentProductId++;
     const createdAt = new Date();
-    const product: Product = { ...insertProduct, id, createdAt };
+    
+    // Remove optional fields, then add them with correct null values
+    const { 
+      description, price, images, platformId, 
+      platformName, metadata, ...requiredFields 
+    } = insertProduct;
+    
+    const product: Product = { 
+      ...requiredFields, 
+      id, 
+      createdAt, 
+      description: description || null,
+      price: price || null,
+      images: images || null,
+      platformId: platformId || null,
+      platformName: platformName || null,
+      metadata: metadata || null
+    };
+    
     this.products.set(id, product);
     return product;
   }
@@ -124,7 +153,28 @@ export class MemStorage implements IStorage {
   async createVideo(insertVideo: InsertVideo): Promise<Video> {
     const id = this.currentVideoId++;
     const createdAt = new Date();
-    const video: Video = { ...insertVideo, id, createdAt, publishedAt: null };
+    
+    // Separate required and optional fields
+    const { 
+      description, metadata, productId, templateId, videoUrl, 
+      thumbnailUrl, youtubeVideoId, status, ...requiredFields 
+    } = insertVideo;
+    
+    const video: Video = { 
+      ...requiredFields, 
+      id, 
+      createdAt, 
+      publishedAt: null,
+      status: status || 'draft',
+      description: description || null,
+      metadata: metadata || null,
+      productId: productId || null,
+      templateId: templateId || null,
+      videoUrl: videoUrl || null,
+      thumbnailUrl: thumbnailUrl || null,
+      youtubeVideoId: youtubeVideoId || null
+    };
+    
     this.videos.set(id, video);
     return video;
   }
@@ -152,7 +202,25 @@ export class MemStorage implements IStorage {
   async createVideoAnalytics(insertAnalytics: InsertVideoAnalytics): Promise<VideoAnalytics> {
     const id = this.currentAnalyticsId++;
     const updatedAt = new Date();
-    const analytics: VideoAnalytics = { ...insertAnalytics, id, updatedAt };
+    
+    // Separate required and optional fields
+    const {
+      views, likes, comments, shares, ctr, 
+      retentionRate, ...requiredFields
+    } = insertAnalytics;
+    
+    const analytics: VideoAnalytics = { 
+      ...requiredFields, 
+      id, 
+      updatedAt: updatedAt, 
+      views: views === undefined ? 0 : views,
+      likes: likes === undefined ? 0 : likes,
+      comments: comments === undefined ? 0 : comments,
+      shares: shares === undefined ? 0 : shares,
+      ctr: ctr || null,
+      retentionRate: retentionRate || null
+    };
+    
     this.videoAnalytics.set(id, analytics);
     return analytics;
   }

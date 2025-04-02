@@ -2,7 +2,7 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { runMigrations } from "./db";
-import { DbStorage } from "./db-storage";
+import { DatabaseStorage } from "./database-storage";
 import { setStorage } from "./storage";
 
 // Initialize database
@@ -12,7 +12,7 @@ async function initializeDatabase() {
     await runMigrations();
     
     // Set up database storage
-    const dbStorage = new DbStorage();
+    const dbStorage = new DatabaseStorage();
     setStorage(dbStorage);
     
     log("Database initialized successfully", "db");
