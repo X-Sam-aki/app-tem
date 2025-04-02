@@ -111,7 +111,10 @@ const ProductExtraction = ({ onExtractComplete }: ProductExtractionProps) => {
             {errors.url && (
               <p className="mt-1 text-sm text-red-500">{errors.url.message}</p>
             )}
-            <p className="mt-2 text-sm text-slate-500">Paste a valid Temu product URL to extract product information.</p>
+            <p className="mt-2 text-sm text-slate-500">
+              Paste a valid Temu product URL to extract product information. 
+              Example format: https://www.temu.com/subject/n9/googleshopping-landingpage-a-psurl.html?goods_id=601099511975028
+            </p>
           </div>
         </form>
         

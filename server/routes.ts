@@ -180,20 +180,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { url } = temuUrlSchema.parse(req.body);
       
-      // Mock product extraction for now (in a real app this would call an external service)
-      // In production, this would use a Supabase Edge Function to scrape the product data
-      const mockProduct = {
-        title: "Sample Temu Product",
-        description: "This is a description of the product that would be extracted from Temu",
-        price: "$23.99",
-        images: ["https://via.placeholder.com/150"],
-        platformId: "temu-123456",
-        platformName: "temu",
-        url,
-        metadata: { rating: 4.5, reviewCount: 120 }
-      };
+      // Import the Temu product extractor
+      const { extractTemuProduct } = await import('./services/temu-extractor');
       
-      res.json(mockProduct);
+      try {
+        // Extract the actual product data from Temu
+        const productData = await extractTemuProduct(url);
+        res.json(productData);
+      } catch (error) {
+        console.error('Error extracting product:', error);
+        res.status(500).json({ 
+          message: 'Failed to extract product data',
+          error: error instanceof Error ? error.message : String(error)
+        });
+      }
     } catch (err) {
       handleZodError(err, res);
     }
