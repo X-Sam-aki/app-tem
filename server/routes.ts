@@ -4,7 +4,7 @@ import { storage } from "./storage";
 import { 
   loginSchema, 
   registerSchema, 
-  temuUrlSchema, 
+  productUrlSchema, 
   insertProductSchema, 
   insertVideoSchema,
   insertVideoAnalyticsSchema
@@ -178,24 +178,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Product routes
   app.post('/api/products/extract', isAuthenticated, async (req, res) => {
     try {
-      const { url } = temuUrlSchema.parse(req.body);
+      const { url } = productUrlSchema.parse(req.body);
       
-      // Validate URL format
-      if (!url.includes('temu.com')) {
-        return res.status(400).json({ 
-          message: 'Invalid Temu URL format',
-          error: 'The URL provided does not appear to be a valid Temu product URL'
-        });
-      }
-      
-      // Import the Temu product extractor
-      const { extractTemuProduct } = await import('./services/temu-extractor');
+      // Import the product extractor factory
+      const { extractProduct } = await import('./services/product-extractor');
       
       try {
         console.log('Attempting to extract product data from:', url);
         
-        // Extract the actual product data from Temu
-        const productData = await extractTemuProduct(url);
+        // Extract the product data using the appropriate extractor
+        const productData = await extractProduct(url);
         
         // Check if we got a fallback response (extraction failed)
         if (productData.metadata.extractionError) {
@@ -204,7 +196,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // We still return 200 since we have fallback data, but include warning
           return res.status(200).json({
             ...productData,
-            extractionWarning: 'Some product data could not be extracted directly from Temu. The data shown may be incomplete.'
+            extractionWarning: `Some product data could not be extracted directly from ${productData.platformName}. The data shown may be incomplete.`
           });
         }
         
@@ -216,7 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         res.status(500).json({ 
           message: 'Failed to extract product data',
           error: error instanceof Error ? error.message : String(error),
-          suggestion: 'Please try a different Temu product URL or check if the URL is correct.'
+          suggestion: 'Please try a different product URL or check if the URL is correct.'
         });
       }
     } catch (err) {

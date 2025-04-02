@@ -143,12 +143,20 @@ export const registerSchema = insertUserSchema.extend({
   path: ["confirmPassword"],
 });
 
-export const temuUrlSchema = z.object({
-  url: z.string().url().refine(url => url.includes("temu.com"), {
-    message: "URL must be from temu.com",
+export const productUrlSchema = z.object({
+  url: z.string().url().refine(url => {
+    // Allow URLs from supported platforms
+    return url.includes("temu.com") || 
+           url.includes("amazon.com");
+  }, {
+    message: "URL must be from a supported platform (Temu, Amazon)",
   }),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
-export type TemuUrlInput = z.infer<typeof temuUrlSchema>;
+export type ProductUrlInput = z.infer<typeof productUrlSchema>;
+
+// Keep temuUrlSchema for backward compatibility (deprecated)
+export const temuUrlSchema = productUrlSchema;
+export type TemuUrlInput = ProductUrlInput;

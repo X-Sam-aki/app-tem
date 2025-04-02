@@ -6,8 +6,17 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { LockIcon, BrushIcon, TrendingUpIcon, ZapIcon, ShareIcon, EyeIcon, LayersIcon, BotIcon, GlobeIcon } from "lucide-react";
 
+// Type definition for premium features
+interface PremiumFeature {
+  id: string;
+  title: string;
+  icon: React.ReactNode;
+  description: string;
+  enabled?: boolean;
+}
+
 // Features available in the premium version
-const premiumFeatures = [
+const premiumFeatures: PremiumFeature[] = [
   {
     id: 'color-palette',
     title: 'Personalized color palette suggestion for video branding',
@@ -60,7 +69,8 @@ const premiumFeatures = [
     id: 'multi-platform',
     title: 'Multi-platform support (Amazon, Walmart, etc.)',
     icon: <GlobeIcon className="h-4 w-4 mr-2" />,
-    description: 'Extract products from additional e-commerce platforms',
+    description: 'Extract products from additional e-commerce platforms including Amazon! Create diverse affiliate content for better reach.',
+    enabled: true, // This premium feature is now available
   },
 ];
 
@@ -92,23 +102,36 @@ export function AdvancedFeatures() {
       <CardContent>
         <div className="space-y-4">
           {premiumFeatures.map((feature) => (
-            <div key={feature.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-gray-300 transition-all">
+            <div 
+              key={feature.id} 
+              className={`flex items-center justify-between p-3 rounded-lg border transition-all ${
+                feature.enabled 
+                  ? 'border-amber-300 bg-amber-50/50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
               <div className="flex-1">
                 <div className="flex items-center mb-1">
                   {feature.icon}
-                  <span className="font-medium text-sm">{feature.title}</span>
+                  <span className="font-medium text-sm">
+                    {feature.title}
+                    {feature.enabled && (
+                      <Badge variant="outline" className="ml-2 bg-green-100 text-green-800 border-green-300 text-xs">
+                        Active
+                      </Badge>
+                    )}
+                  </span>
                 </div>
                 <p className="text-xs text-gray-500 ml-6">{feature.description}</p>
               </div>
               <div className="flex items-center ml-4">
                 <Switch
                   id={`feature-${feature.id}`}
-                  disabled
-                  checked={selectedFeatures.includes(feature.id)}
-                  // This would normally enable the feature, but we're disabling it for demo purposes
+                  disabled={!feature.enabled}
+                  checked={feature.enabled || selectedFeatures.includes(feature.id)}
                   onCheckedChange={() => toggleFeature(feature.id)}
                 />
-                <LockIcon className="ml-2 h-4 w-4 text-gray-400" />
+                {!feature.enabled && <LockIcon className="ml-2 h-4 w-4 text-gray-400" />}
               </div>
             </div>
           ))}

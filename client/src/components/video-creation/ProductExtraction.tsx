@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { temuUrlSchema, type TemuUrlInput } from '@shared/schema';
+import { productUrlSchema, type ProductUrlInput } from '@shared/schema';
 import { X, Loader2, Info, ExternalLink } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import { supabaseEdgeFunctions } from '@/lib/supabase';
@@ -32,8 +32,8 @@ const ProductExtraction = ({ onExtractComplete }: ProductExtractionProps) => {
   const [extractedProduct, setExtractedProduct] = useState<any | null>(null);
   const [isProductDialogOpen, setIsProductDialogOpen] = useState(false);
   
-  const { register, handleSubmit, formState: { errors } } = useForm<TemuUrlInput>({
-    resolver: zodResolver(temuUrlSchema),
+  const { register, handleSubmit, formState: { errors } } = useForm<ProductUrlInput>({
+    resolver: zodResolver(productUrlSchema),
     defaultValues: {
       url: ''
     }
@@ -71,7 +71,7 @@ const ProductExtraction = ({ onExtractComplete }: ProductExtractionProps) => {
     }
   });
 
-  const onSubmit = (data: TemuUrlInput) => {
+  const onSubmit = (data: ProductUrlInput) => {
     extractMutation.mutate(data.url);
   };
 
@@ -86,11 +86,11 @@ const ProductExtraction = ({ onExtractComplete }: ProductExtractionProps) => {
       <div className="space-y-4">
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
-            <Label htmlFor="product-url">Temu Product URL</Label>
+            <Label htmlFor="product-url">Product URL</Label>
             <div className="mt-1 flex rounded-md shadow-sm">
               <Input
                 id="product-url"
-                placeholder="https://www.temu.com/product/..."
+                placeholder="https://www.example.com/product/..."
                 className="flex-1"
                 {...register('url')}
                 error={!!errors.url}
@@ -112,8 +112,10 @@ const ProductExtraction = ({ onExtractComplete }: ProductExtractionProps) => {
               <p className="mt-1 text-sm text-red-500">{errors.url.message}</p>
             )}
             <p className="mt-2 text-sm text-slate-500">
-              Paste a valid Temu product URL to extract product information. 
-              Example format: https://www.temu.com/subject/n9/googleshopping-landingpage-a-psurl.html?goods_id=601099511975028
+              Paste a valid product URL from supported platforms (Temu, Amazon). 
+              Examples: 
+              <br />- Temu: https://www.temu.com/subject/n9/googleshopping-landingpage-a-psurl.html?goods_id=601099511975028
+              <br />- Amazon: https://www.amazon.com/dp/B08N5LNQCX
             </p>
           </div>
         </form>
@@ -167,7 +169,7 @@ const ProductExtraction = ({ onExtractComplete }: ProductExtractionProps) => {
                 <DialogHeader>
                   <DialogTitle>Product Details</DialogTitle>
                   <DialogDescription>
-                    Complete information extracted from the Temu product page
+                    Complete information extracted from the product page
                   </DialogDescription>
                 </DialogHeader>
                 
@@ -201,7 +203,9 @@ const ProductExtraction = ({ onExtractComplete }: ProductExtractionProps) => {
                         <div>
                           <h3 className="font-medium text-xl">{extractedProduct.title}</h3>
                           <div className="flex items-center mt-2">
-                            <Badge variant="outline" className="mr-2">Temu</Badge>
+                            <Badge variant="outline" className="mr-2 capitalize">
+                              {extractedProduct.platformName || 'Unknown Platform'}
+                            </Badge>
                             <span className="text-2xl font-bold text-slate-900">{extractedProduct.price}</span>
                           </div>
                         </div>
@@ -221,7 +225,7 @@ const ProductExtraction = ({ onExtractComplete }: ProductExtractionProps) => {
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:underline flex items-center"
                           >
-                            <span>View on Temu</span>
+                            <span>View on {extractedProduct.platformName ? extractedProduct.platformName.charAt(0).toUpperCase() + extractedProduct.platformName.slice(1) : 'Platform'}</span>
                             <ExternalLink className="h-4 w-4 ml-1" />
                           </a>
                         </div>
