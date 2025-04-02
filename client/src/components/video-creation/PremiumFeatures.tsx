@@ -1,106 +1,92 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Crown, Sparkles } from "lucide-react";
-import { EmojiReactionSystem } from "./EmojiReactionSystem";
-import { CreatorDashboard } from "./CreatorDashboard";
-import { HoverAnimations } from "./HoverAnimations";
-import { SocialMediaSharePreview } from "./SocialMediaSharePreview";
-import { ColorPaletteGenerator } from "./ColorPaletteGenerator";
+import React from 'react';
+import { Link } from 'wouter';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { 
+  Sparkles, 
+  BarChart3, 
+  Heart, 
+  Share2, 
+  Palette,
+  Lock
+} from 'lucide-react';
 
-// This is a mock user status - in a real app, this would come from your authentication context
-// and backend verification of premium status
-type User = {
-  id: number;
-  name: string;
-  isPremium: boolean;
-};
-
-export function PremiumFeatures() {
-  const [expanded, setExpanded] = useState(true);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
-  
-  // Mock loading user - in a real app, this would be your auth state
-  useEffect(() => {
-    // Simulate loading user data
-    setTimeout(() => {
-      setCurrentUser({
-        id: 1,
-        name: "Test User",
-        isPremium: false // Set to false by default to show premium upgrade flow
-      });
-    }, 500);
-  }, []);
-  
-  if (!currentUser) {
-    return (
-      <Card className="w-full mb-6 border-muted-foreground/20">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg flex items-center">
-            <span className="mr-2">✨</span> Premium Features
-          </CardTitle>
-          <CardContent className="p-0">
-            <div className="h-8 animate-pulse bg-muted rounded-md"></div>
-          </CardContent>
-        </CardHeader>
-      </Card>
-    );
-  }
+const PremiumFeatures = () => {
+  const features = [
+    {
+      id: 'emoji-reaction',
+      title: 'Emoji Reaction System',
+      description: 'Add interactive emoji reactions to your videos to boost engagement',
+      icon: <Heart className="h-5 w-5" />,
+      comingSoon: false
+    },
+    {
+      id: 'creator-dashboard',
+      title: 'Creator Dashboard',
+      description: 'Gain insights with advanced analytics and performance metrics',
+      icon: <BarChart3 className="h-5 w-5" />,
+      comingSoon: false
+    },
+    {
+      id: 'hover-animations',
+      title: 'Interactive Hover Animations',
+      description: 'Create eye-catching hover effects for product thumbnails',
+      icon: <Sparkles className="h-5 w-5" />,
+      comingSoon: false
+    },
+    {
+      id: 'share-preview',
+      title: 'Social Media Share Preview',
+      description: 'Preview how your content will appear across different platforms',
+      icon: <Share2 className="h-5 w-5" />,
+      comingSoon: false
+    },
+    {
+      id: 'color-palette',
+      title: 'AI-powered Color Palette Generator',
+      description: 'Automatically generate optimized color schemes for your thumbnails',
+      icon: <Palette className="h-5 w-5" />,
+      comingSoon: false
+    }
+  ];
 
   return (
-    <Card className="w-full mb-6 border-muted-foreground/20">
-      <CardHeader className="pb-3 cursor-pointer" onClick={() => setExpanded(!expanded)}>
-        <div className="flex justify-between items-center">
-          <CardTitle className="text-lg flex items-center">
-            <span className="mr-2">✨</span> Premium Features
-            {!currentUser.isPremium && (
-              <Button variant="premium" size="sm" className="ml-4" onClick={(e) => {
-                e.stopPropagation();
-                window.location.href = '/premium-features';
-              }}>
-                <Crown className="mr-2 h-4 w-4" />
-                Upgrade
-              </Button>
-            )}
-          </CardTitle>
-          {expanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-        </div>
-        <CardDescription>
-          Enhance your video marketing with advanced features and analytics
-        </CardDescription>
-      </CardHeader>
-      
-      {expanded && (
-        <CardContent>
-          <div className="space-y-6">
-            {!currentUser.isPremium && (
-              <div className="bg-gradient-to-r from-amber-50 to-amber-100 dark:from-amber-950/20 dark:to-amber-900/20 rounded-lg p-4 mb-6 border border-amber-200 dark:border-amber-900/50">
-                <div className="flex items-start space-x-3">
-                  <Sparkles className="h-5 w-5 text-amber-600 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium text-amber-800 dark:text-amber-400">Upgrade to Premium</h3>
-                    <p className="text-sm text-amber-700 dark:text-amber-500 mt-1">
-                      Unlock advanced creator tools, analytics, and engagement features to supercharge your affiliate marketing campaigns.
-                    </p>
-                    <div className="mt-3">
-                      <Button variant="premium" onClick={() => window.location.href = '/premium-features'}>
-                        <Crown className="mr-2 h-4 w-4" />
-                        View Premium Plans
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            <EmojiReactionSystem isPremium={currentUser.isPremium} />
-            <CreatorDashboard isPremium={currentUser.isPremium} />
-            <HoverAnimations isPremium={currentUser.isPremium} />
-            <SocialMediaSharePreview />
-            <ColorPaletteGenerator isPremium={currentUser.isPremium} />
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {features.map((feature) => (
+        <Card key={feature.id} className="overflow-hidden relative bg-white/10 border border-white/20 backdrop-blur-sm">
+          <div className="absolute top-0 right-0 p-2">
+            <Lock className="h-4 w-4 text-amber-500" />
           </div>
-        </CardContent>
-      )}
-    </Card>
+          
+          <CardContent className="p-5">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="bg-purple-700/30 p-2 rounded-full">
+                {feature.icon}
+              </div>
+              <h3 className="font-semibold">{feature.title}</h3>
+            </div>
+            
+            <p className="text-sm text-white/80 mb-4">{feature.description}</p>
+            
+            <div className="flex items-center justify-between">
+              {feature.comingSoon ? (
+                <Badge variant="outline" className="text-xs">Coming Soon</Badge>
+              ) : (
+                <Badge variant="outline" className="text-xs bg-amber-500/20 text-amber-300 border-amber-500/30">Available</Badge>
+              )}
+              
+              <Link href="/premium-features">
+                <Button variant="ghost" size="sm" className="text-xs hover:bg-white/10">
+                  Upgrade
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
-}
+};
+
+export default PremiumFeatures;

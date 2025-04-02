@@ -32,13 +32,13 @@ const Sidebar = ({ isMobile = false, closeMobileMenu }: SidebarProps) => {
 
   return (
     <div className={`${isMobile ? '' : 'hidden md:flex md:flex-shrink-0'}`}>
-      <div className="flex flex-col w-64 border-r border-slate-200 bg-white">
-        <div className="flex items-center h-16 px-4 border-b border-slate-200">
+      <div className="flex flex-col w-64 border-r border-white/20 bg-gradient-to-b from-purple-900 to-purple-800">
+        <div className="flex items-center h-16 px-4 border-b border-white/20">
           <div className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-md bg-primary flex items-center justify-center">
+            <div className="h-8 w-8 rounded-md bg-amber-500 flex items-center justify-center">
               <Video className="h-5 w-5 text-white" />
             </div>
-            <span className="text-lg font-semibold text-slate-900">Shortify</span>
+            <span className="text-lg font-semibold text-white">Shortify</span>
           </div>
         </div>
         
@@ -47,11 +47,11 @@ const Sidebar = ({ isMobile = false, closeMobileMenu }: SidebarProps) => {
             onClick={() => handleNavigation('/')}
             className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
               isActive('/') 
-                ? 'bg-slate-100 text-slate-900' 
-                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                ? 'bg-white/20 text-white' 
+                : 'text-white/80 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <Home className="w-5 h-5 mr-3 text-slate-500" />
+            <Home className="w-5 h-5 mr-3 text-white/70" />
             Dashboard
           </button>
           
@@ -59,11 +59,11 @@ const Sidebar = ({ isMobile = false, closeMobileMenu }: SidebarProps) => {
             onClick={() => handleNavigation('/create-video')}
             className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
               isActive('/create-video') 
-                ? 'bg-slate-100 text-slate-900' 
-                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                ? 'bg-white/20 text-white' 
+                : 'text-white/80 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <PlusSquare className="w-5 h-5 mr-3 text-slate-500" />
+            <PlusSquare className="w-5 h-5 mr-3 text-white/70" />
             Create Video
           </button>
           
@@ -71,11 +71,11 @@ const Sidebar = ({ isMobile = false, closeMobileMenu }: SidebarProps) => {
             onClick={() => handleNavigation('/my-videos')}
             className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
               isActive('/my-videos') 
-                ? 'bg-slate-100 text-slate-900' 
-                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                ? 'bg-white/20 text-white' 
+                : 'text-white/80 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <Film className="w-5 h-5 mr-3 text-slate-500" />
+            <Film className="w-5 h-5 mr-3 text-white/70" />
             My Videos
           </button>
           
@@ -83,11 +83,11 @@ const Sidebar = ({ isMobile = false, closeMobileMenu }: SidebarProps) => {
             onClick={() => handleNavigation('/analytics')}
             className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
               isActive('/analytics') 
-                ? 'bg-slate-100 text-slate-900' 
-                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                ? 'bg-white/20 text-white' 
+                : 'text-white/80 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <BarChart3 className="w-5 h-5 mr-3 text-slate-500" />
+            <BarChart3 className="w-5 h-5 mr-3 text-white/70" />
             Analytics
           </button>
           
@@ -95,47 +95,47 @@ const Sidebar = ({ isMobile = false, closeMobileMenu }: SidebarProps) => {
             onClick={() => handleNavigation('/settings')}
             className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
               isActive('/settings') 
-                ? 'bg-slate-100 text-slate-900' 
-                : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+                ? 'bg-white/20 text-white' 
+                : 'text-white/80 hover:bg-white/10 hover:text-white'
             }`}
           >
-            <Settings className="w-5 h-5 mr-3 text-slate-500" />
+            <Settings className="w-5 h-5 mr-3 text-white/70" />
             Settings
           </button>
           
-          <div className="pt-6 mt-6 border-t border-slate-200">
+          <div className="pt-6 mt-6 border-t border-white/20">
             <button
               onClick={() => handleNavigation('/premium-features')}
               className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
                 isActive('/premium-features') 
-                  ? 'bg-amber-100 text-amber-700' 
-                  : 'text-amber-600 hover:bg-amber-50 hover:text-amber-700'
+                  ? 'bg-amber-500/30 text-amber-300' 
+                  : 'text-amber-300 hover:bg-amber-500/20 hover:text-amber-200'
               }`}
             >
-              <Crown className="w-5 h-5 mr-3 text-amber-500" />
+              <Crown className="w-5 h-5 mr-3 text-amber-400" />
               Premium Features
             </button>
           </div>
         </div>
         
-        <div className="p-4 border-t border-slate-200">
+        <div className="p-4 border-t border-white/20">
           <div className="flex items-center">
-            <div className="h-8 w-8 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
+            <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center overflow-hidden">
               {user?.avatar ? (
                 <img src={user.avatar} alt={user.name || user.username} className="h-full w-full object-cover" />
               ) : (
-                <span className="text-sm font-medium text-slate-600">
+                <span className="text-sm font-medium text-white">
                   {user?.name?.charAt(0) || user?.username?.charAt(0) || 'U'}
                 </span>
               )}
             </div>
             <div className="ml-3">
-              <p className="text-sm font-medium text-slate-900">{user?.name || user?.username}</p>
-              <p className="text-xs text-slate-500">{user?.email}</p>
+              <p className="text-sm font-medium text-white">{user?.name || user?.username}</p>
+              <p className="text-xs text-white/70">{user?.email}</p>
             </div>
             <button 
               onClick={() => logout()}
-              className="ml-auto text-slate-500 hover:text-slate-700"
+              className="ml-auto text-white/70 hover:text-white"
               title="Log out"
             >
               <LogOut className="h-5 w-5" />

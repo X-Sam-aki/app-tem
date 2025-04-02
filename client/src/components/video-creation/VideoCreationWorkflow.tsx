@@ -7,7 +7,7 @@ import { apiRequest } from '@/lib/queryClient';
 import ProductExtraction from './ProductExtraction';
 import VideoCustomization from './VideoCustomization';
 import VideoPublishing from './VideoPublishing';
-import { PremiumFeatures } from './PremiumFeatures';
+import PremiumFeatures from './PremiumFeatures';
 import { toast } from 'sonner';
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 
