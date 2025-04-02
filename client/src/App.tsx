@@ -10,6 +10,7 @@ import CreateVideo from "@/pages/create-video";
 import MyVideos from "@/pages/my-videos";
 import Analytics from "@/pages/analytics";
 import Settings from "@/pages/settings";
+import PremiumFeatures from "@/pages/premium-features";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ProgressProvider } from "./contexts/ProgressContext";
 import ProtectedRoute from "./components/layout/ProtectedRoute";
@@ -45,6 +46,13 @@ function Router() {
         {() => (
           <ProtectedRoute>
             <Settings />
+          </ProtectedRoute>
+        )}
+      </Route>
+      <Route path="/premium-features">
+        {() => (
+          <ProtectedRoute>
+            <PremiumFeatures />
           </ProtectedRoute>
         )}
       </Route>

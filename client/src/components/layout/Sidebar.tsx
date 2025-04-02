@@ -7,7 +7,9 @@ import {
   BarChart3, 
   Settings, 
   LogOut,
-  Video
+  Video,
+  Sparkles,
+  Crown
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -100,6 +102,20 @@ const Sidebar = ({ isMobile = false, closeMobileMenu }: SidebarProps) => {
             <Settings className="w-5 h-5 mr-3 text-slate-500" />
             Settings
           </button>
+          
+          <div className="pt-6 mt-6 border-t border-slate-200">
+            <button
+              onClick={() => handleNavigation('/premium-features')}
+              className={`flex items-center px-3 py-2 text-sm font-medium rounded-md ${
+                isActive('/premium-features') 
+                  ? 'bg-amber-100 text-amber-700' 
+                  : 'text-amber-600 hover:bg-amber-50 hover:text-amber-700'
+              }`}
+            >
+              <Crown className="w-5 h-5 mr-3 text-amber-500" />
+              Premium Features
+            </button>
+          </div>
         </div>
         
         <div className="p-4 border-t border-slate-200">

@@ -5,38 +5,35 @@ import {
   videoAnalytics, type VideoAnalytics, type InsertVideoAnalytics
 } from "@shared/schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { IStorage } from "./storage";
 
 export class DatabaseStorage implements IStorage {
   // User operations
   async getUser(id: number): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    return user;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db
-      .insert(users)
-      .values(insertUser)
-      .returning();
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
-  
+
   // Product operations
   async getProduct(id: number): Promise<Product | undefined> {
     const [product] = await db.select().from(products).where(eq(products.id, id));
-    return product || undefined;
+    return product;
   }
 
   async getProductsByUserId(userId: number): Promise<Product[]> {
@@ -44,10 +41,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createProduct(insertProduct: InsertProduct): Promise<Product> {
-    const [product] = await db
-      .insert(products)
-      .values(insertProduct)
-      .returning();
+    const [product] = await db.insert(products).values(insertProduct).returning();
     return product;
   }
 
@@ -57,21 +51,18 @@ export class DatabaseStorage implements IStorage {
       .set(product)
       .where(eq(products.id, id))
       .returning();
-    return updatedProduct || undefined;
+    return updatedProduct;
   }
 
   async deleteProduct(id: number): Promise<boolean> {
-    const [deletedProduct] = await db
-      .delete(products)
-      .where(eq(products.id, id))
-      .returning();
-    return !!deletedProduct;
+    const result = await db.delete(products).where(eq(products.id, id));
+    return result.count > 0;
   }
-  
+
   // Video operations
   async getVideo(id: number): Promise<Video | undefined> {
     const [video] = await db.select().from(videos).where(eq(videos.id, id));
-    return video || undefined;
+    return video;
   }
 
   async getVideosByUserId(userId: number): Promise<Video[]> {
@@ -79,10 +70,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createVideo(insertVideo: InsertVideo): Promise<Video> {
-    const [video] = await db
-      .insert(videos)
-      .values(insertVideo)
-      .returning();
+    const [video] = await db.insert(videos).values(insertVideo).returning();
     return video;
   }
 
@@ -92,24 +80,21 @@ export class DatabaseStorage implements IStorage {
       .set(video)
       .where(eq(videos.id, id))
       .returning();
-    return updatedVideo || undefined;
+    return updatedVideo;
   }
 
   async deleteVideo(id: number): Promise<boolean> {
-    const [deletedVideo] = await db
-      .delete(videos)
-      .where(eq(videos.id, id))
-      .returning();
-    return !!deletedVideo;
+    const result = await db.delete(videos).where(eq(videos.id, id));
+    return result.count > 0;
   }
-  
+
   // Video Analytics operations
   async getVideoAnalytics(videoId: number): Promise<VideoAnalytics | undefined> {
     const [analytics] = await db
       .select()
       .from(videoAnalytics)
       .where(eq(videoAnalytics.videoId, videoId));
-    return analytics || undefined;
+    return analytics;
   }
 
   async createVideoAnalytics(insertAnalytics: InsertVideoAnalytics): Promise<VideoAnalytics> {
@@ -123,9 +108,9 @@ export class DatabaseStorage implements IStorage {
   async updateVideoAnalytics(id: number, analytics: Partial<InsertVideoAnalytics>): Promise<VideoAnalytics | undefined> {
     const [updatedAnalytics] = await db
       .update(videoAnalytics)
-      .set(analytics)
+      .set({ ...analytics, updatedAt: new Date() })
       .where(eq(videoAnalytics.id, id))
       .returning();
-    return updatedAnalytics || undefined;
+    return updatedAnalytics;
   }
 }
